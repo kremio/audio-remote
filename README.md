@@ -1,4 +1,11 @@
-### Monitoring Audio CD insert/eject with udev
+The aim of this project is to allow controlling the playback of audio CDs over an HTML/web interface, and later other audio files using playlists, on a Linux system.
+
+The system is centered around a Node.js HTTP server that interacts with various programmes to play the audio, control the volume and fetch album information from the Musicbrainz database.
+
+## Dependencies
+TODO
+
+## Monitoring Audio CD insert/eject with udev
 The idea is to create a file in the /tmp/ dir when an audio cd is inserted and to remove it when it's ejected
 - Create a udev rules script: /etc/udev/rules.d/99-cd-inserted.rules
 - Set the rules
