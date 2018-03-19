@@ -1,0 +1,15 @@
+{
+  "name": "audio-remote",
+  "version": "1.0.0",
+  "description": "A web interface to control audio playback",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kremio Software Development",
+  "license": "ISC",
+  "dependencies": {
+    "mplayer": "git+https://github.com/noodny/mplayer.git",
+    "sprintf-js": "^1.1.1"
+  }
+}
