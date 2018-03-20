@@ -21,8 +21,8 @@ SUBSYSTEM=="block", KERNEL=="sr0", ACTION=="change", ENV{ID_CDROM_MEDIA}=="", RU
 sudo /etc/init.d/udev restart
 ```
 
-# Enabling CD monitoring on system start
-It appears that the new rules will not work on reboot, probably because the /tmp folder is not available at system boot. I've tried to write the ```audio-cd-in-drive``` file to another directory (eg. /var/log/) to circumvent the problem, but I believe this does not work either because the filesystem is mounter in read-only at boot time, when the *udev* service is started.
+### Enabling CD monitoring on system start
+It appears that the new rules will not work on reboot, probably because the /tmp folder is not available at system boot. I've tried to write the ```audio-cd-in-drive``` file to another directory (eg. /var/log/) to circumvent the problem, but I believe this does not work either because the filesystem is mounted read-only at boot time, that is when the *udev* service starts.
 
 The solution as for now (19.03.2018), is to use ```/etc/rc.local``` to restart *udev*:
 - Create the ```/etc/rc.local``` script, if it does not exist yet
