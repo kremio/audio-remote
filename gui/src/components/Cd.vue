@@ -1,7 +1,7 @@
 <template>
   <div>
   	  <p>CD in drive: {{ cdAvailable }}</p>
-	  <button v-if="cdAvailable" v-on:click="eject" >Eject</button>
+	  <button v-if="cdAvailable" v-on:click="eject">Eject</button>
   </div>
 </template>
 

@@ -1,6 +1,5 @@
 import api from "./index.js"
 
-console.log(api)
 function status(){
   return api.emit("cd.status.get")
 }
