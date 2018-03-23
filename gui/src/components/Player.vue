@@ -8,6 +8,7 @@
 
 <script>
 import Player from "../api/player.js"
+import PlayList from "../api/playlist.js"
 
 export default {
 	computed: {
@@ -20,10 +21,10 @@ export default {
 			Player.playPause()
 		},
 		previous: function(){
-			Player.previous()
+			PlayList.previous()
 		},
 		next: function(){
-			Player.next()
+			PlayList.next()
 		}
 	},
 	mounted(){

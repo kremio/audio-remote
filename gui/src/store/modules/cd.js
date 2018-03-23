@@ -19,8 +19,11 @@ export default {
         .then( (status) => {
           if( status.available != state.available  ){
             commit('availabilityChanged')
-            if( status.available ){ //let's get the tracks list
-               dispatch('getTracksList')
+            if( status.available ){
+              //let's get the updated playlist
+              dispatch('playlist/getFilesList',null,{root:true})
+              //and see if we can get the album and tracks list info
+              dispatch('getTracksList')
             }else{
               commit('setTracksList', undefined)
             }

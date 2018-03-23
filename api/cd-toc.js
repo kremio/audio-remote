@@ -49,6 +49,7 @@ async function readTOC(){
     .reduce( (acc, duration, trackNum) => {
       acc.tracks.push({
         title:`Track ${trackNum + 1}`,
+        file:`cdda://${trackNum + 1}`,
         duration: duration
       })
       return acc

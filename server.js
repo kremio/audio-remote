@@ -9,6 +9,7 @@ const api = require('./api').default
 //TODO: Figure out a better way to register API modules
 const apiCd = require('./api/cd')
 const apiPlayer = require('./api/player')
+const apiPlayList = require('./api/playlist')
 const apiCdToc = require('./api/cd-toc')
 const apiMusicbrainz = require('./api/musicbrainz')
 
@@ -23,6 +24,6 @@ app.use(koaBody())
 app.use(serve( __dirname + guiDir ))
 
 //API calls handling middleware
-app.use( api)
+app.use( api )
 
 app.listen(3000)

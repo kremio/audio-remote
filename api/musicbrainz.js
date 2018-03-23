@@ -4,7 +4,8 @@ const Musicbrainz = require('../musicbrainz').default
 const musicbrainz = new Musicbrainz()
 
 api.register('cd.toc.ready', async (...TOC) => {
-  const cdData = await musicbrainz.fetchCdData( TOC )
+  try{
+    const cdData = await musicbrainz.fetchCdData( TOC )
 //  console.log("Answer from musicbrainz:", cdData)
   const albumInfo = {
     title: cdData.title,
@@ -12,4 +13,7 @@ api.register('cd.toc.ready', async (...TOC) => {
   }
   const tracksInfo = cdData.tracks
   api.emit('cd.trackslist.update', [albumInfo, tracksInfo])
+  }catch(err){
+    console.log("Musicbrains error:", err)
+  }
 })

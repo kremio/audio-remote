@@ -20,6 +20,7 @@ class Musicbrainz {
         const { statusCode } = res
         const contentType = res.headers['content-type']
 
+        //console.log("Musicbrainz responded", res)
         let error
         if (statusCode !== 200) {
           error = new Error(`Request Failed.\nStatus Code: ${statusCode}`);

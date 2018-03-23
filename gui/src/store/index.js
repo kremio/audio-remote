@@ -1,8 +1,11 @@
 import Vuex from 'vuex'
 
+//Store modules
 import cd from './modules/cd'
 import player from './modules/player'
+import playlist from './modules/playlist'
 
+//Async remote API
 import Volume from '../api/volume'
 
 export default {
@@ -13,7 +16,8 @@ export default {
   },
   modules:{
     cd,
-    player
+    player,
+    playlist
   },
   mutations: {
     changeVolume(state, level){
