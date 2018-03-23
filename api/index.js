@@ -40,7 +40,7 @@ function emit(msg, params = []){
 
   const leaf = getLeaf( msg.split(".") )
   if( leaf.handlers.length == 0 ){
-    return {}
+    return []
   }
 
   return leaf.handlers

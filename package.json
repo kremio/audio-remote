@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "node ./node_modules/webpack/bin/webpack.js --config ./config/webpack.config.js --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Kremio Software Development",
   "license": "ISC",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "css-loader": "^0.28.11",
     "html-webpack-plugin": "^3.0.7",
+    "jest": "^22.4.3",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.7",
     "vue-loader": "^14.2.1",
