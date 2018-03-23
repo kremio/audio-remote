@@ -16,9 +16,14 @@ function next(){
   return api.emit("player.playlist.next")
 }
 
+function jumpTo(position){
+  return api.emit("player.playlist.jumpTo", [position])
+}
+
 export default {
   status,
   playPause,
   previous,
-  next
+  next,
+  jumpTo
 }

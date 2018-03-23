@@ -10,11 +10,12 @@ class Player extends MPlayer{
     this.isPlaying = false
     this.isPlayingCD = false
     this.currentFile = undefined
+    this.tracksList = []
     this._volume = 100 //initial volume, in percent
 
     this.on('stop', () => {
       this.isPlaying = false
-      this.isPlayingCD = false
+      //this.isPlayingCD = false
       console.log(this.isPlaying)
     })
 
@@ -42,11 +43,11 @@ class Player extends MPlayer{
     }
 
     //Create a playlist
-    const tracksList = []
+    this.tracksList = []
     for(let i = 1; i <= trackCount; i++){
-      tracksList.push(`cdda://${i}`)
+      this.tracksList.push(`cdda://${i}`)
     }
-    const data = tracksList.join("\n")
+    const data = this.tracksList.join("\n")
     fs.writeFile(this.cdPlayList, data, (err) => {
       if(err){
         console.log(err)
@@ -58,7 +59,25 @@ class Player extends MPlayer{
       this.isPlayingCD = trackCount
     })
 
-    
+  }
+
+  jumpTo(position){
+    if( !this.isPlayingCD || position < 1 || position > this.tracksList.length ){
+      return
+    }
+
+    const current = this.tracksList.findIndex( (track) => track == this.currentFile ) + 1
+    if( current == position ){
+      return
+    }
+
+    this.openFile(this.tracksList[position - 1])
+    /*
+    const action = current > position ? this.previous.bind(this) : this.next.bind(this)
+    for(let i = 0; i < Math.abs(current - position); i++){
+      action()
+    }*/
+//    console.log("jumpTo", this.currentFile, this.tracksList )
   }
 
 }
@@ -66,13 +85,13 @@ class Player extends MPlayer{
 const player = new Player()
 
 
-api.register('cd.status.changed', (trackCount) => {
+api.register('cd.status.changed', async (trackCount) => {
   if(trackCount){
     player.playCD(trackCount)
   }
 })
 
-api.register('player.status.get', () => {
+api.register('player.status.get', async () => {
   return {
     playing: player.isPlaying,
     playingCd: player.isPlayingCD,
@@ -80,22 +99,27 @@ api.register('player.status.get', () => {
   }
 })
 
-api.register('player.play.toggle', () => {
+api.register('player.play.toggle', async () => {
   player.isPlaying ? player.pause() : player.play()
   return { before: player.isPlaying }
 })
 
-api.register('player.playlist.previous', () => {
+api.register('player.playlist.previous', async () => {
   player.previous()
   return { }
 })
 
-api.register('player.playlist.next', () => {
+api.register('player.playlist.next', async () => {
   player.next()
   return { }
 })
 
-api.register('volume.set', (volumePercent) => {
+api.register('player.playlist.jumpTo', async (index) => {
+  player.jumpTo(index)
+  return { }
+})
+
+api.register('volume.set', async (volumePercent) => {
   console.log("Set volume", volumePercent)
   //Cap it
   const volume = Math.min( 150, Math.max(0, Number(volumePercent)) )
@@ -103,6 +127,6 @@ api.register('volume.set', (volumePercent) => {
   return {volume}
 })
 
-api.register('volume.get', () => {
-  return {volume: this.player._volume}
+api.register('volume.get', async () => {
+  return {volume: player._volume}
 })

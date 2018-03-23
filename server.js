@@ -9,6 +9,8 @@ const api = require('./api').default
 //TODO: Figure out a better way to register API modules
 const apiCd = require('./api/cd')
 const apiPlayer = require('./api/player')
+const apiCdToc = require('./api/cd-toc')
+const apiMusicbrainz = require('./api/musicbrainz')
 
 const guiDir ='/gui/dist'
 

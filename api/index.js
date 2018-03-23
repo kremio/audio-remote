@@ -29,6 +29,11 @@ function register(msg, handler){
   leaf.handlers.push(handler)
 }
 
+/*
+ * Call each registered handlers for the given message
+ * asynchronously.
+ * Returns an array of promises.
+ */
 function emit(msg, params = []){
 
   console.log("emit", msg, params)
@@ -37,10 +42,9 @@ function emit(msg, params = []){
   if( leaf.handlers.length == 0 ){
     return {}
   }
-  return leaf.handlers.reduce(
-    (acc, handler) => Object.assign(acc, handler( ...params )),
-    {}
-  )
+
+  return leaf.handlers
+    .map( (handler) => handler( ...params ) )
 }
 
 /*
@@ -69,7 +73,14 @@ exports.default = async (ctx) => {
   //Parse the request into event path and event params
   const q = JSON.parse(ctx.request.body).what.match(/^([^(]*)\(?([^)]*)?/)
 
-  const result = emit( q[1], q[2] ? q[2].split(',') : undefined )
+  //Wait for all the listeners to process the request
+  //and gather all the results in a single plain object
+  const result = await Promise.all(
+    emit( q[1], q[2] ? q[2].split(',') : undefined )
+  ).then( (results) => {
+    return results
+      .reduce( (acc, res ) => Object.assign(acc, res),{} )
+  })
 
   ctx.response.status = 200
   ctx.response.body = result

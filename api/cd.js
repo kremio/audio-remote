@@ -13,6 +13,7 @@ process.on('exit', exitCdWatcher )
 
 
 let cdAvailable = false
+let tracksDurations = []
 
 cdWatcher.on('message', (msg) => {
   console.log(msg)
@@ -24,10 +25,10 @@ cdWatcher.on('message', (msg) => {
 
 cdWatcher.send('status')
 
-api.register('cd.status.get', () => {
+api.register('cd.status.get', async () => {
   return {available: cdAvailable ? true : false}
 })
 
-api.register('cd.eject', () => {
+api.register('cd.eject', async () => {
   exec("eject")
 })
