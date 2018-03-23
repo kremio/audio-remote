@@ -1,7 +1,10 @@
 const api = require('./index.js')
 const { fork, exec } = require('child_process')
+let watcher
+const flagFileDirectory = '/tmp'
+const flagFileName = 'audio-cd-in-drive'
 
-const cdWatcher = fork('./cd-watcher')
+const cdWatcher = fork('./cd-watcher',[flagFileDirectory, flagFileName])
 
 function exitCdWatcher(code){
   console.log("Cleanin up")
