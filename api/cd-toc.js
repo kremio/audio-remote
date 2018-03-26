@@ -21,7 +21,9 @@ function computeDurations(toc, durations = []){
   //Each block correspond to 1/75 second of audio
   //they are 75 times 1/75 second in a second
   //they are 4500 times 1/75 second in a minute
-
+  const durationsSeconds = (blocksCount / 75.0).toFixed(2)
+  durations.push(durationsSeconds)
+/*
   const minutes = Math.floor( blocksCount / 4500  )
   blocksCount -= minutes * 4500
   const seconds = Math.floor( blocksCount / 75 )
@@ -29,7 +31,7 @@ function computeDurations(toc, durations = []){
   const centiseconds = (blocksCount / 75).toFixed(2)
 
   durations.push(`${minutes}:${seconds}${""+centiseconds.substring(1)}`)
-
+*/
   return computeDurations( toc, durations )
 }
 
@@ -70,6 +72,16 @@ api.register('cd.status.changed', async (available) => {
   console.log("New tracks list:", tracksList)
 })
 
+api.register('cd.trackslist.track.duration', (trackFile) => {
+  console.log('cd.trackslist.track.duration', trackFile)
+  if( !tracksList ){
+    return -1
+  }
+  return tracksList.tracks
+    .find( (track ) => track.file == trackFile )
+    .duration
+})
+
 api.register('cd.trackslist.update', async (albumInfo, tracksInfo) => {
   //console.log("Received new CD info:", albumInfo, tracksInfo)
   tracksInfo.forEach( (track) => {
@@ -78,6 +90,11 @@ api.register('cd.trackslist.update', async (albumInfo, tracksInfo) => {
   })
   Object.assign(tracksList, albumInfo)
   delete tracksList.temporary
+})
+
+api.register('cd.trackslist.notfound', async () => {
+  delete tracksList.temporary
+  tracksList.notfound = true
 })
 
 api.register('cd.trackslist.get', async () => {

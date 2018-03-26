@@ -10,6 +10,8 @@ class Player extends MPlayer{
     this.isPlaying = false
     this.currentFile = undefined
     this._volume = 100 //initial volume, in percent
+    this.timeSeconds = 0
+    this.duration = -1
 
     this.on('stop', () => {
       this.isPlaying = false
@@ -21,9 +23,18 @@ class Player extends MPlayer{
       console.log(this.isPlaying)
     })
 
+    this.on('time', (timeElapsed) => {
+      this.timeSeconds = timeElapsed
+    })
+
     this.on('status', (status) => {
       this.currentFile = status.filename
       api.emit('playlist.currentfile.set', [this.currentFile])
+      if( this.currentFile ){
+        this.duration = api.emit('cd.trackslist.track.duration', [this.currentFile])[0]
+      }else{
+        this.duration = -1
+      }
       this._volume = status.volume
     })
 
@@ -76,7 +87,9 @@ api.register('player.play.list', async (files) => {
 api.register('player.status.get', async () => {
   return {
     playing: player.isPlaying,
-    playingFile: player.currentFile
+    playingFile: player.currentFile,
+    timeSeconds: player.timeSeconds,
+    duration: player.duration
   }
 })
 
@@ -94,6 +107,10 @@ api.register('playlist.previous', async () => {
 api.register('playlist.next', async () => {
   player.next()
   return { }
+})
+
+api.register('player.seek', async (toSeconds) => {
+  player.seek( toSeconds )
 })
 
 api.register('volume.set', async (volumePercent) => {
