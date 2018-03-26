@@ -68,6 +68,17 @@ class Player extends MPlayer{
     this.isPlayingCD = false
   }
 
+  togglePlay(){
+    if( this.isPlaying ){
+      this.pause()
+      this.isPlaying = false
+    }else{
+      this.play()
+      this.isPlaying = true
+    }
+    return !this.isPlaying
+  }
+
 }
 
 const player = new Player()
@@ -94,8 +105,7 @@ api.register('player.status.get', async () => {
 })
 
 api.register('player.play.toggle', async () => {
-  player.isPlaying ? player.pause() : player.play()
-  return { before: player.isPlaying }
+  return { before: player.togglePlay() }
 })
 
 api.register('playlist.previous', async () => {
