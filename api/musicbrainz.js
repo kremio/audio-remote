@@ -6,12 +6,9 @@ const musicbrainz = new Musicbrainz()
 api.register('cd.toc.ready', async (...TOC) => {
   try{
     const cdData = await musicbrainz.fetchCdData( TOC )
-    const albumInfo = {
-      title: cdData.title,
-      date: cdData.date
-    }
     const tracksInfo = cdData.tracks
-    api.emit('cd.trackslist.update', [albumInfo, tracksInfo])
+    delete cdData.tracks
+    api.emit('cd.trackslist.update', [cdData, tracksInfo])
   }catch(err){
     console.log("Musicbrains error:", err)
     api.emit('cd.trackslist.notfound')

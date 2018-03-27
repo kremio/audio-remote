@@ -1,6 +1,7 @@
 <template>
   <div>
 	  <div v-if="available">
+		  <img v-if='coverArt' v-bind:src='coverArt'/>
 		  <h1>{{ title }}</h1>
 		  <tracks-list v-bind:tracks='tracks'/>
 	  </div>
@@ -22,10 +23,13 @@ export default {
 			return this.$store.state.cd.tracksList.temporary
 		},
 		title(){
-				return this.$store.state.cd.tracksList.title
+			return this.$store.state.cd.tracksList.title
 		},
 		tracks(){
 			return this.$store.state.cd.tracksList.tracks
+		},
+		coverArt(){
+			return this.$store.state.cd.tracksList.coverArt
 		}
 	},
 	components: {

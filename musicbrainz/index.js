@@ -1,5 +1,12 @@
 const http = require('http')
+const url = require('url')
 const crypto = require('crypto')
+
+function asyncGet( request ){
+  return new Promise( (success, failure) => {
+    http.get( request, success )
+  })
+}
 
 //Query musicbrainz.org for audio CD data
 class Musicbrainz {
@@ -12,40 +19,96 @@ class Musicbrainz {
     }
   }
 
-  fetchCdData( TOC ){
+
+  async handleHTTPResponse( res ){
+    const { statusCode } = res
+    if( (statusCode == 307 || statusCode == 302) && res.headers['location'] ){
+      const location = url.parse( res.headers['location'] )
+      return asyncGet( Object.assign({}, this.reqOpt, {
+        host: location.host,
+        path: location.pathname
+      }) ).then( this.handleHTTPResponse.bind(this) )
+    }
+
+    let error
+    const contentType = res.headers['content-type']
+
+    if (statusCode !== 200){
+      error = new Error(`Request Failed.\nStatus Code: ${statusCode}`);
+    }else if (!/^application\/json/.test(contentType)) {
+      error = new Error('Invalid content-type.\n' + `Expected application/json but received ${contentType}`)
+    }
+
+    if (error) {
+      // consume response data to free up memory
+      res.resume()
+      throw error
+    }
+
+    return new Promise( (success, failure) => {
+      res.setEncoding('utf8')
+      let rawData = ''
+      res.on('data', (chunk) => { rawData += chunk })
+      res.on('end', () => {
+        success( JSON.parse(rawData) )
+      })
+    })
+
+  }
+
+  doMusicbrainzQuery( query ){
+    return asyncGet( Object.assign({}, this.reqOpt, { path: `/ws/2/${query}` }) )
+      .then( this.handleHTTPResponse.bind(this) )
+  }
+
+
+  async doCoverArtArchiveQuery(MBID){
+    return asyncGet( Object.assign({}, this.reqOpt, {
+      host: 'coverartarchive.org', path: `/release/${MBID}/`
+    }) )
+      .then( this.handleHTTPResponse.bind(this) )
+      .then( this.handleCoverArtJSON.bind(this) )
+
+  }
+
+  handleCoverArtJSON( data ){
+    return data.images[0].image
+  }
+
+
+
+  findRecordingByName( name, tracksCount ){
+    return new Promise( (success, failure) => {
+      const q = `recording/?query=recording:${encodeURIComponent(name)}%20AND%20tracks:${tracksCount}`
+      console.log(q)
+      this.doMusicbrainzQuery( q )
+        .then( (data) => {
+          /*
+          console.log(data.recordings[0].title)
+          console.log(data.recordings[0]['artist-credit'])
+           Quality Control
+[ { artist:
+     { id: '11c6b106-1c1f-429d-8407-b1ee155d7f72',
+       name: 'Jurassic 5',
+       'sort-name': 'Jurassic 5',
+       aliases: [Array] } } ]
+           */
+          success(data)
+//          this.handleDiscIdJSON( success, failure, discid, data )
+        })
+        .catch( failure )
+    })
+  }
+
+  async fetchCdData( TOC ){
     const discid = this.computeDiscId( TOC )
 
-    return new Promise( (success,rej) => {
-      http.get( Object.assign({}, this.reqOpt,{ path: `/ws/2/discid/${discid}?inc=artist-credits+recordings` }), (res) => {
-        const { statusCode } = res
-        const contentType = res.headers['content-type']
-
-        //console.log("Musicbrainz responded", res)
-        let error
-        if (statusCode !== 200) {
-          error = new Error(`Request Failed.\nStatus Code: ${statusCode}`);
-        } else if (!/^application\/json/.test(contentType)) {
-          error = new Error('Invalid content-type.\n' + `Expected application/json but received ${contentType}`)
-        }
-        if (error) {
-          rej( error )
-          // consume response data to free up memory
-          res.resume()
-          return
-        }
-
-        res.setEncoding('utf8')
-        let rawData = ''
-        res.on('data', (chunk) => { rawData += chunk; });
-        res.on('end', () => {
-          try {
-            const parsedData = JSON.parse(rawData);
-            this.handleDiscIdJSON( success, rej, discid, parsedData )
-          } catch (e) {
-            rej(e)
-          }
+    return new Promise( (success, failure) => {
+      this.doMusicbrainzQuery( `discid/${discid}?inc=artist-credits+recordings` )
+        .then( (data) => {
+          this.handleDiscIdJSON( success, failure, discid, data )
         })
-      })
+        .catch( failure )
     })
   }
 
@@ -79,18 +142,32 @@ class Musicbrainz {
       .replace('+','.').replace('/','_').replace('=','-') // convert +, /, and = to respectively ., _, and -
   }
 
-  handleDiscIdJSON( success, rej, discid, data ){
+  async handleDiscIdJSON( success, rej, discid, data ){
     if( !data.releases || data.releases.length == 0 ){
       rej( new Error("DiscId not found in Musicbrainz") )
       return
     }
 
-    const record = {
-      title: data.releases[0].title,
-      date: data.releases[0].date
+    //Check if the cover art work is available
+    const release = data.releases[0]
+    let coverArt = undefined
+    if( release['cover-art-archive'] && release['cover-art-archive'].count > 0){
+      try{
+        coverArt = await this.doCoverArtArchiveQuery(release.id)
+      }catch(err){
+        console.log(err)
+      }
     }
-    record.tracks = data.releases[0].media
-      .find( (medium) => medium.discs[0].id == discid )
+
+
+    const record = {
+      title: release.title,
+      date: release.date,
+      mbid: release.id,
+      coverArt
+    }
+    record.tracks = release.media
+      .find( (medium) => medium.discs.find( (disc) => disc.id == discid ) )
       .tracks.map( (track) => {
         const t = {
           title: track.title,
