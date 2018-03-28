@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import cd from './modules/cd'
 import player from './modules/player'
 import playlist from './modules/playlist'
+import search from './modules/search'
 
 //Async remote API
 import Volume from '../api/volume'
@@ -17,7 +18,8 @@ export default {
   modules:{
     cd,
     player,
-    playlist
+    playlist,
+    search
   },
   mutations: {
     changeVolume(state, level){

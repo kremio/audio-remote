@@ -2,7 +2,7 @@
 function emit(msg, params = undefined){
   const p = params ? `(${params.join(',')})`:''
   return new Promise( (success, failure) => {
-    const request = new Request('api', {
+    const request = new Request( 'api', {
       method: 'POST',
       body: `{"what":"${msg}${p}"}`
     })

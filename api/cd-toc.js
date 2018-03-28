@@ -90,6 +90,7 @@ api.register('cd.trackslist.update', async (albumInfo, tracksInfo) => {
   })
   Object.assign(tracksList, albumInfo)
   delete tracksList.temporary
+  delete tracksList.notfound
 })
 
 api.register('cd.trackslist.notfound', async () => {
@@ -97,6 +98,14 @@ api.register('cd.trackslist.notfound', async () => {
   tracksList.notfound = true
 })
 
+api.register('cd.recording.set', async () => {
+  tracksList.temporary = true
+})
+
 api.register('cd.trackslist.get', async () => {
   return tracksList
+})
+
+api.register('cd.trackslist.count.get', () => {
+  return tracksList.tracks.length
 })

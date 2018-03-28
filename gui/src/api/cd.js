@@ -12,8 +12,13 @@ function tracksList(){
   return api.emit("cd.trackslist.get")
 }
 
+function assignRecording(recordingId){
+  return api.emit("cd.recording.set",[recordingId])
+}
+
 export default {
   status,
   eject,
-  tracksList
+  tracksList,
+  assignRecording
 }

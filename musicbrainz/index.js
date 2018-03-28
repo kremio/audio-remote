@@ -75,26 +75,39 @@ class Musicbrainz {
     return data.images[0].image
   }
 
-
-
-  findRecordingByName( name, tracksCount ){
+  findRecordingByName( name, artist, tracksCount ){
     return new Promise( (success, failure) => {
-      const q = `recording/?query=recording:${encodeURIComponent(name)}%20AND%20tracks:${tracksCount}`
-      console.log(q)
+      const search = {
+        release: name,
+        tracks: tracksCount
+      }
+
+      const q = 'release/?query=' + Object.keys(search)
+        .filter( (k) => search[k] != "")
+        .map( (k) => `${k}:${encodeURIComponent(search[k])}` )
+      .join('%20AND%20')
+
       this.doMusicbrainzQuery( q )
         .then( (data) => {
-          /*
-          console.log(data.recordings[0].title)
-          console.log(data.recordings[0]['artist-credit'])
-           Quality Control
-[ { artist:
-     { id: '11c6b106-1c1f-429d-8407-b1ee155d7f72',
-       name: 'Jurassic 5',
-       'sort-name': 'Jurassic 5',
-       aliases: [Array] } } ]
-           */
+          if( artist == "" ){
+            success(data)
+            return
+          }
+          //Filter using the artist field
+          const artistRegex = new RegExp(artist, 'i');
+          data.releases = data.releases.filter( (release) => {
+            return release['artist-credit']
+              .reduce( (acc, credit) => { //collect all the names
+                acc.push( credit.artist.name )
+                if(credit.artist.aliases){
+                  credit.artist.aliases.forEach( (alias) => acc.push(alias.name) )
+                }
+                return acc
+              }, [])
+            .find( (name) => artistRegex.test(name) )
+          })
+
           success(data)
-//          this.handleDiscIdJSON( success, failure, discid, data )
         })
         .catch( failure )
     })
@@ -106,9 +119,22 @@ class Musicbrainz {
     return new Promise( (success, failure) => {
       this.doMusicbrainzQuery( `discid/${discid}?inc=artist-credits+recordings` )
         .then( (data) => {
-          this.handleDiscIdJSON( success, failure, discid, data )
+          if( !data.releases || data.releases.length == 0 ){
+            throw new Error("DiscId not found in Musicbrainz")
+          }
+
+          this.handleReleaseJSON( success, failure, data.releases[0], discid )
         })
         .catch( failure )
+    })
+  }
+
+  async fetchReleaseData( releaseId ){
+    return new Promise( (success, failure) => {
+      this.doMusicbrainzQuery( `release/${releaseId}?inc=artist-credits+recordings` )
+        .then( (data) => {
+          this.handleReleaseJSON( success, failure, data )
+        })
     })
   }
 
@@ -142,14 +168,8 @@ class Musicbrainz {
       .replace('+','.').replace('/','_').replace('=','-') // convert +, /, and = to respectively ., _, and -
   }
 
-  async handleDiscIdJSON( success, rej, discid, data ){
-    if( !data.releases || data.releases.length == 0 ){
-      rej( new Error("DiscId not found in Musicbrainz") )
-      return
-    }
+  async handleReleaseJSON( success, rej, release, discid = false ){
 
-    //Check if the cover art work is available
-    const release = data.releases[0]
     let coverArt = undefined
     if( release['cover-art-archive'] && release['cover-art-archive'].count > 0){
       try{
@@ -167,7 +187,7 @@ class Musicbrainz {
       coverArt
     }
     record.tracks = release.media
-      .find( (medium) => medium.discs.find( (disc) => disc.id == discid ) )
+      .find( (medium) => discid ? medium.discs.find( (disc) => disc.id == discid ) : true )
       .tracks.map( (track) => {
         const t = {
           title: track.title,

@@ -3,6 +3,7 @@
 	  <div v-if="available">
 		  <img v-if='coverArt' v-bind:src='coverArt'/>
 		  <h1>{{ title }}</h1>
+		  <album-search v-if='notFound'/>
 		  <tracks-list v-bind:tracks='tracks'/>
 	  </div>
 	  <div v-else>
@@ -13,6 +14,7 @@
 
 <script>
 import TracksList from "./TracksList.vue"
+import AlbumSearch from "./AlbumSearch.vue"
 
 export default {
 	computed: {
@@ -21,6 +23,9 @@ export default {
 		},
 		temporary(){
 			return this.$store.state.cd.tracksList.temporary
+		},
+		notFound(){
+			return this.$store.state.cd.tracksList.notfound
 		},
 		title(){
 			return this.$store.state.cd.tracksList.title
@@ -33,11 +38,11 @@ export default {
 		}
 	},
 	components: {
-		TracksList
+		TracksList,
+		AlbumSearch
 	}
 }
 </script>
 
 <style scoped>
-
 </style>

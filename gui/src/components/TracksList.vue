@@ -11,11 +11,6 @@ import PlayList from "../api/playlist.js"
 
 export default {
 	props:['tracks'],
-	/*computed: {
-		currentFile(){
-			return this.$store.player.playingFile
-		}
-	},*/
 	methods:{
 		isActive: function( file ){
 			return file == this.$store.state.player.playingFile
