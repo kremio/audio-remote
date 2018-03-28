@@ -1,10 +1,11 @@
 {
   "name": "audio-remote",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A web interface to control audio playback",
   "private": true,
   "scripts": {
     "dev": "node ./node_modules/webpack/bin/webpack.js --config ./config/webpack.config.js --watch",
+    "dev:hot": "webpack-dev-server --mode development --config ./config/webpack.config.js",
     "test": "jest"
   },
   "author": "Kremio Software Development",
@@ -26,6 +27,7 @@
     "vue-loader": "^14.2.1",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.12"
+    "webpack-cli": "^2.0.12",
+    "webpack-dev-server": "^3.1.1"
   }
 }
