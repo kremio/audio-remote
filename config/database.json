@@ -1,0 +1,10 @@
+{
+	"test": {
+		"driver": "sqlite3",
+		"filename": ":memory:"
+	},
+	"dev": {
+		"driver": "sqlite3",
+		"filename": "./db/audio-remote.db"
+	}
+}
