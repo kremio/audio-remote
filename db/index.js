@@ -77,7 +77,6 @@ exports.default = class Db {
   insertCompilation( compilation ){
     return new Promise( (success, failure) => {
       const {statement, data} = this.insertStatement( ['title','mbid','date','cover'], compilation, 'compilations' )
-      //console.log( Object.keys(data).map((k) => data[k]) )
       this.db.run(statement, data, function(err){
         if (err) {
           failure(err)
