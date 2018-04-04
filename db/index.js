@@ -60,7 +60,6 @@ exports.default = class Db {
   }
 
   doBulkInsert(authorizedKeys, data, table){
-    //console.log("doBulkInsert", authorizedKeys, data, table)
     return new Promise( (success, failure) => {
       this.db.serialize( () => {
         this.db.run("begin transaction")
@@ -72,7 +71,7 @@ exports.default = class Db {
             stmt.run()
             stmt.finalize()
           })
-        
+
         this.db.run("commit", (err) => {
           if (err) {
             failure(err)

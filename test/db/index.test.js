@@ -12,6 +12,7 @@ let dbmigrate
 
 describe('Database queries', () => {
 
+  //Setup test db: run all migrations and open db connection
   beforeAll( (done) => {
     dbmigrate =  DBMigrate.getInstance(true,{
       config: path.resolve(__dirname, '../../config/database.json'),
@@ -29,10 +30,12 @@ describe('Database queries', () => {
 
   })
 
+  //Release db connection
   afterAll( () => {
     db.close()
   })
 
+  //Clear all test data
   afterEach( async () => {
     function deleteData( tableName ){
       return new Promise( (success, failure) => {
@@ -94,7 +97,7 @@ describe('Database queries', () => {
   test('Inserting recording', async () => {
     const recordingsBefore = await db.recordings()
     expect( recordingsBefore ).toHaveLength(0)
-    
+
     const recording = await recordingFactory.create(db)
     const recordingsAfter = await db.recordings()
 
@@ -107,9 +110,8 @@ describe('Database queries', () => {
     expect( compilationsBefore ).toHaveLength(0)
     const recordingsBefore = await db.recordings()
     expect( recordingsBefore ).toHaveLength(0)
-    
-    const compilation = await compilationFactory.createWithRecordings(db)
 
+    const compilation = await compilationFactory.createWithRecordings(db)
     const storedCompilation = await db.compilationWithRecordings( compilation.id )
     expect( storedCompilation ).toEqual( compilation )
   })
@@ -129,9 +131,8 @@ describe('Database queries', () => {
     expect( recordingsBefore ).toHaveLength(0)
     const artistsBefore = await db.artists()
     expect( artistsBefore ).toHaveLength(0)
-    
-    const recording = await recordingFactory.createWithArtists(db)
 
+    const recording = await recordingFactory.createWithArtists(db)
     const storedRecording = await db.recordingWithArtists( recording.id )
     expect( storedRecording ).toEqual( recording )
   })

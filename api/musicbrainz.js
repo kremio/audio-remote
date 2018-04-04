@@ -5,7 +5,8 @@ const musicbrainz = new Musicbrainz()
 
 api.register('cd.toc.ready', async (...TOC) => {
   try{
-    const cdData = await musicbrainz.fetchCdData( TOC )
+    const discid =  musicbrainz.computeDiscId( TOC )
+    const cdData = await musicbrainz.fetchCdData( discid )
     const tracksInfo = cdData.tracks
     delete cdData.tracks
     api.emit('cd.trackslist.update', [cdData, tracksInfo])
