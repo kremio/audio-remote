@@ -4,7 +4,21 @@ let watcher
 const flagFileDirectory = '/tmp'
 const flagFileName = 'audio-cd-in-drive'
 
-const cdWatcher = fork('./cd-watcher',[flagFileDirectory, flagFileName])
+let cdWatcher
+
+api.register('api.ready', async () => {
+  cdWatcher = fork('./cd-watcher',[flagFileDirectory, flagFileName])
+  cdWatcher.on('message', (msg) => {
+    console.log(msg)
+    if( cdAvailable != msg.cdAvailable ){
+      cdAvailable =  msg.cdAvailable
+      api.emit('cd.status.changed', [cdAvailable])
+    }
+  })
+
+  cdWatcher.send('status')
+})
+
 
 function exitCdWatcher(code){
   console.log("Cleanin up")
@@ -18,15 +32,7 @@ process.on('exit', exitCdWatcher )
 let cdAvailable = false
 let tracksDurations = []
 
-cdWatcher.on('message', (msg) => {
-  console.log(msg)
-  if( cdAvailable != msg.cdAvailable ){
-    cdAvailable =  msg.cdAvailable
-    api.emit('cd.status.changed', [cdAvailable])
-  }
-})
 
-cdWatcher.send('status')
 
 api.register('cd.status.get', async () => {
   return {available: cdAvailable ? true : false}

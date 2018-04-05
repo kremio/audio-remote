@@ -29,7 +29,7 @@ api.register('cd.recording.set', async (recordingId) => {
 })
 
 api.register('search.cd', async (title, artist) => {
-  const tracksCount = api.emit('cd.trackslist.count.get')
-  return await musicbrainz.findRecordingByName( title, artist, tracksCount )
+  const tracksCount = await api.emit('cd.trackslist.count.get')[0]
+  return musicbrainz.findRecordingByName( title, artist, tracksCount )
 })
 

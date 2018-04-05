@@ -23,15 +23,7 @@ function computeDurations(toc, durations = []){
   //they are 4500 times 1/75 second in a minute
   const durationsSeconds = (blocksCount / 75.0).toFixed(2)
   durations.push(durationsSeconds)
-/*
-  const minutes = Math.floor( blocksCount / 4500  )
-  blocksCount -= minutes * 4500
-  const seconds = Math.floor( blocksCount / 75 )
-  blocksCount -= seconds * 75
-  const centiseconds = (blocksCount / 75).toFixed(2)
 
-  durations.push(`${minutes}:${seconds}${""+centiseconds.substring(1)}`)
-*/
   return computeDurations( toc, durations )
 }
 

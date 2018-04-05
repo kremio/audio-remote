@@ -1,3 +1,38 @@
+const {promisify} = require('util')
+const fs = require('fs')
+const path = require('path')
+
+const lstatAsync = promisify(fs.lstat)
+const readdirAsync = promisify(fs.readdir)
+
+/*
+ * Dynamically load the API modules
+ * All the modules in this directory and below are loaded
+ * except for files named 'index.js'
+ */
+async function ModuleLoader( inputPath ){
+  const stat = await lstatAsync( inputPath )
+
+  if (stat.isDirectory()) {
+    // we have a directory: do a tree walk
+    const files = await readdirAsync( inputPath )
+
+    return Promise.all(
+      files.map( (file) => path.join(inputPath, file) )
+      .map( ModuleLoader )
+    )
+  }
+
+    if( path.basename(inputPath) == 'index.js' ){
+      return
+    }
+    // we have a file: load it
+    require( inputPath )
+    console.log( `API module ${inputPath} loaded` )
+    return
+}
+
+
 const listeners = {}
 
 /*
@@ -46,6 +81,14 @@ function emit(msg, params = []){
   return leaf.handlers
     .map( (handler) => handler( ...params ) )
 }
+
+
+//Load all the modules and notify them that the API is ready
+ModuleLoader( __dirname ).then( () => {
+  emit('api.ready')
+})
+
+
 
 /*
  * Call emit('path.of.event', [eventsParams]) to

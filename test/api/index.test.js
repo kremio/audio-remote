@@ -1,6 +1,45 @@
+const node_path = require('path')
+jest.mock('fs')
+const mockFs = require('fs')
+
+/*** TEST AUTO API MODULES LOADING ***/
+/*
+ * This test is different from the other as it relies
+ * on the code under test to attempt to load the modules
+ * specified in a mock file system structure, except for
+ * the files named 'index.js'.
+ * The test will fail if an attempt is made to load a module
+ * that is not mocked.
+ */
+
+// Set up some mocked out API modules
+//Setup virtual mocks
+jest.mock(
+  '../../api/test_module.js',
+  () => true,
+  {virtual: true}
+)
+
+jest.mock(
+  '../../api/extra/extra_module.js',
+  () => true,
+  {virtual: true}
+)
+
+// Create the corresponding mocked filesystem
+const apiDirRoot = node_path.resolve(__dirname, '../../api/')
+const subFolder = node_path.join( apiDirRoot, 'extra')
+
+mockFs.__setMockFile( 'index.js', apiDirRoot )
+mockFs.__setMockFile( 'test_module.js', apiDirRoot )
+mockFs.__setMockFile( 'index.js', subFolder  )
+mockFs.__setMockFile( 'extra_module.js', subFolder  )
+
+
 const {emit, register} = require('../../api/index')
 
 describe('Registering message listeners', () => {
+
   test('Registering a single listener', (done) => {
     function listener(){
       done()
