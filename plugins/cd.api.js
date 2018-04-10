@@ -9,7 +9,6 @@ module.exports = function(api){
   api.register('api.ready', async () => {
     cdWatcher = fork('./cd-watcher',[flagFileDirectory, flagFileName])
     cdWatcher.on('message', (msg) => {
-      console.log(msg)
       if( cdAvailable != msg.cdAvailable ){
         cdAvailable =  msg.cdAvailable
         api.emit('cd.status.changed', [cdAvailable])

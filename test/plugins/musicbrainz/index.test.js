@@ -1,6 +1,6 @@
-const Musicbrainz = require('../../musicbrainz').default
+const Musicbrainz = require('../../../plugins/musicbrainz').default
 const nock = require('nock')
-const musicbrainzFactory = require('../factories/musicbrainz')
+const musicbrainzFactory = require('../../factories/musicbrainz')
 
 const MB_HOST = 'http://musicbrainz.org'
 const MB_API_PATH = '/ws/2'

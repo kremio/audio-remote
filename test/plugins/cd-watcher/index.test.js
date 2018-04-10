@@ -15,7 +15,7 @@ describe('Monitoring audio cd presence in drive', () => {
       if (err && err.code != 'ENOENT'){
         throw err
       }
-      watcher = fork('./cd-watcher',[flagFileDirectory, flagFileName])
+      watcher = fork('./plugins/cd-watcher',[flagFileDirectory, flagFileName])
       done()
     })
   })
