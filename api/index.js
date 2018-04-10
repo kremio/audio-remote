@@ -5,32 +5,8 @@ const path = require('path')
 const lstatAsync = promisify(fs.lstat)
 const readdirAsync = promisify(fs.readdir)
 
-/*
- * Dynamically load the API modules
- * All the modules in this directory and below are loaded
- * except for files named 'index.js'
- */
-async function ModuleLoader( inputPath ){
-  const stat = await lstatAsync( inputPath )
+const pluginsDir = path.resolve(__dirname,'../plugins')
 
-  if (stat.isDirectory()) {
-    // we have a directory: do a tree walk
-    const files = await readdirAsync( inputPath )
-
-    return Promise.all(
-      files.map( (file) => path.join(inputPath, file) )
-      .map( ModuleLoader )
-    )
-  }
-
-    if( path.basename(inputPath) == 'index.js' ){
-      return
-    }
-    // we have a file: load it
-    require( inputPath )
-    console.log( `API module ${inputPath} loaded` )
-    return
-}
 
 
 const listeners = {}
@@ -83,8 +59,36 @@ function emit(msg, params = []){
 }
 
 
+
+/*
+ * Dynamically load the API modules
+ * All the modules from files ending in '.api.js' in the
+ * 'plugins' directory and below are loaded.
+ */
+async function ModuleLoader( inputPath ){
+  const stat = await lstatAsync( inputPath )
+
+  if (stat.isDirectory()) {
+    // we have a directory: do a tree walk
+    const files = await readdirAsync( inputPath )
+
+    return Promise.all(
+      files.map( (file) => path.join(inputPath, file) )
+      .map( ModuleLoader )
+    )
+  }
+
+    if( !inputPath.match(/\.api\.js$/) ){
+      return
+    }
+    // we have a file: load it
+    require( inputPath )({emit,register})
+    console.log( `API module ${inputPath} loaded` )
+    return
+}
+
 //Load all the modules and notify them that the API is ready
-ModuleLoader( __dirname ).then( () => {
+ModuleLoader( pluginsDir ).then( () => {
   emit('api.ready')
 })
 

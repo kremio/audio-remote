@@ -6,39 +6,57 @@ const mockFs = require('fs')
 /*
  * This test is different from the other as it relies
  * on the code under test to attempt to load the modules
- * specified in a mock file system structure, except for
- * the files named 'index.js'.
+ * specified in a mock file system structure.
  * The test will fail if an attempt is made to load a module
  * that is not mocked.
  */
 
 // Set up some mocked out API modules
+const mockPluginModule = jest.fn()
+
 //Setup virtual mocks
 jest.mock(
-  '../../api/test_module.js',
-  () => true,
+  '../../plugins/test_module.api.js',
+  () => (...params) => mockPluginModule(...params),
   {virtual: true}
 )
 
 jest.mock(
-  '../../api/extra/extra_module.js',
-  () => true,
+  '../../plugins/extra/extra_module.api.js',
+  () => (...params) => mockPluginModule(...params),
   {virtual: true}
 )
 
 // Create the corresponding mocked filesystem
-const apiDirRoot = node_path.resolve(__dirname, '../../api/')
-const subFolder = node_path.join( apiDirRoot, 'extra')
+const pluginsDirRoot = node_path.resolve(__dirname, '../../plugins/')
+const subFolder = node_path.join( pluginsDirRoot, 'extra')
 
-mockFs.__setMockFile( 'index.js', apiDirRoot )
-mockFs.__setMockFile( 'test_module.js', apiDirRoot )
+mockFs.__setMockFile( 'test_module.api.js', pluginsDirRoot )
+mockFs.__setMockFile( 'test_module.js',pluginsDirRoot )
 mockFs.__setMockFile( 'index.js', subFolder  )
-mockFs.__setMockFile( 'extra_module.js', subFolder  )
+mockFs.__setMockFile( 'extra_module.api.js', subFolder  )
+
+let emit, register
+
+beforeAll( (done) => {
+  const api = require('../../api/index')
+  emit = api.emit
+  register = api.register
+  register('api.ready', done)
+})
+
+describe('Auto-loading plugins modules', () => {
 
 
-const {emit, register} = require('../../api/index')
+  test('Inject the emit and register functions into the plugins', () => {
+    expect( mockPluginModule.mock.calls.length ).toBe(2)
+    expect( mockPluginModule.mock.calls[0][0] ).toEqual({emit,register})
+    expect( mockPluginModule.mock.calls[0][0] ).toEqual( mockPluginModule.mock.calls[1][0] )
+  })
+})
 
 describe('Registering message listeners', () => {
+
 
   test('Registering a single listener', (done) => {
     function listener(){
