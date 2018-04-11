@@ -37,7 +37,7 @@ module.exports = function(api){
     const TOC = await cdDiscId()
     const trackCount = TOC.shift()
     //Broadcast the TOC
-    api.emit('cd.toc.ready', TOC)
+    api.emit('cd.toc.ready', ...TOC)
 
     //Create the default tracks list
     return computeDurations(TOC)
@@ -62,14 +62,15 @@ module.exports = function(api){
     }
 
     tracksList = await readTOC()
-    console.log("New tracks list:", tracksList)
+    //console.log("New tracks list:", tracksList)
   })
 
   api.register('cd.trackslist.track.duration', (trackFile) => {
-    console.log('cd.trackslist.track.duration', trackFile)
+    //console.log('cd.trackslist.track.duration', trackFile)
     if( !tracksList ){
       return -1
     }
+    //console.log( tracksList )
     return tracksList.tracks
       .find( (track ) => track.file == trackFile )
       .duration
@@ -77,11 +78,11 @@ module.exports = function(api){
 
   api.register('cd.trackslist.update', async (albumInfo, tracksInfo) => {
     //console.log("Received new CD info:", albumInfo, tracksInfo)
-    tracksInfo.forEach( (track) => {
-      console.log("track", track)
-      Object.assign(tracksList.tracks[track.position-1], track)
-    })
-    Object.assign(tracksList, albumInfo)
+    const tracks = tracksInfo ? tracksInfo.map( (track) => {
+      return Object.assign({}, tracksList && tracksList.tracks && tracksList.tracks[track.position-1], track)
+    }) : (tracksList && tracksList.tracks) || []
+
+    tracksList = Object.assign({}, tracksList, albumInfo,{tracks})
     delete tracksList.temporary
     delete tracksList.notfound
   })

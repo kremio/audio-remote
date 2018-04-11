@@ -12,20 +12,22 @@ function __setMockChildProc( method, commandOrModule, mock){
 }
 
 
-function fork( module, params ){
+function fork( module, ...params ){
   if( mockedChildProc.fork && mockedChildProc.fork[module] ){
-    return mockedChildProc.fork[module]
+    return mockedChildProc.fork[module](...params)
   }
 
-  throw Error(`Trying to fork non-mocked module ${module}.`)
+  throw Error(`Trying to fork non-mocked module: ${module}.`)
 }
 
-function exec( command, params ){
+function exec( command, cb){
+  //console.log( mockedChildProc.exec[command] )
   if( mockedChildProc.exec && mockedChildProc.exec[command] ){
-    return mockedChildProc.exec[command]()
+    cb( null, mockedChildProc.exec[command]() )
+    return
   }
 
-  throw Error(`Trying to exec non-mocked command ${command}.`)
+  cb( new Error(`Trying to exec non-mocked command: ${command}.`) )
 }
 
 child_process.__setMockChildProc = __setMockChildProc
