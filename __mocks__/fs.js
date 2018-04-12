@@ -83,6 +83,7 @@ function readdir( inputPath, cb ){
 fs.__setMockFile = __setMockFile
 fs.readdir = readdir
 fs.lstat = lstat
+fs.writeFile = jest.fn()
 
 
 module.exports = fs

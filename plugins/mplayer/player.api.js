@@ -1,4 +1,3 @@
-const { fork, exec } = require('child_process')
 const fs = require('fs')
 const MPlayer = require('mplayer')
 
@@ -30,9 +29,9 @@ module.exports = function(api){
 
       this.on('status', (status) => {
         this.currentFile = status.filename
-        api.emit('playlist.currentfile.set', [this.currentFile])
+        api.emit('playlist.currentfile.set', this.currentFile)
         if( this.currentFile ){
-          this.duration = api.emit('cd.trackslist.track.duration', [this.currentFile])[0]
+          this.duration = api.emit('cd.trackslist.track.duration', this.currentFile)
         }else{
           this.duration = -1
         }
@@ -60,7 +59,7 @@ module.exports = function(api){
         this.openPlaylist(this.tmpPlayList)
       })
     }
-
+/*
     cdOut(){
       if(!this.isPlayingCD){
         return
@@ -68,7 +67,7 @@ module.exports = function(api){
       this.stop()
       this.isPlayingCD = false
     }
-
+*/
     togglePlay(){
       if( this.isPlaying ){
         this.pause()
@@ -84,13 +83,14 @@ module.exports = function(api){
 
   const player = new Player()
 
-
+/*
   api.register('cd.status.changed', async (trackCount) => {
     if(!trackCount){
       player.cdOut()
     }
   })
-
+  */
+ 
   api.register('player.play.list', async (files) => {
     player.playList( files )
   })
@@ -125,7 +125,6 @@ module.exports = function(api){
   })
 
   api.register('volume.set', async (volumePercent) => {
-    console.log("Set volume", volumePercent)
     //Cap it
     const volume = Math.min( 150, Math.max(0, Number(volumePercent)) )
     player.volume( volume )

@@ -26,7 +26,7 @@ module.exports = function(api){
 
     set workingList(files){
       this._workingList = files
-      api.emit('player.play.list', [this._workingList])
+      api.emit('player.play.list', this._workingList)
     }
 
     //Play a partial sequence starting from the given file
@@ -84,6 +84,13 @@ module.exports = function(api){
     playlist.toFile( file )
   })
 
+  /*
+   * IMPORTANT:
+   * while playlist.previous will emit a player.play.list,
+   * the player monitoring code MUST emit playlist.currentfile.set(fileName)
+   * once the file is actually being played to maintain the playlist
+   * in synch.
+   */
   api.register('playlist.currentfile.set', async (file) => {
     playlist.currentFile = file
   })

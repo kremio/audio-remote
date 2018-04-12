@@ -1,8 +1,8 @@
 jest.mock('child_process')
 const mockChildProcess = require('child_process')
 
-  const mockApiRegister = jest.fn()
-    const mockApiEmit = jest.fn()
+const mockApiRegister = jest.fn()
+const mockApiEmit = jest.fn()
 
 
 const mockCdWatcher = {
