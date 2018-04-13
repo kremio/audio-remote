@@ -36,8 +36,9 @@ module.exports = function(api){
   async function readTOC(){
     const TOC = await cdDiscId()
     const trackCount = TOC.shift()
+
     //Broadcast the TOC
-    api.emit('cd.toc.ready', ...TOC)
+    api.emit('cd.toc.ready', TOC.slice() )
 
     //Create the default tracks list
     return computeDurations(TOC)
@@ -66,7 +67,7 @@ module.exports = function(api){
   })
 
   api.register('cd.trackslist.track.duration', (trackFile) => {
-    //console.log('cd.trackslist.track.duration', trackFile)
+    console.log('cd.trackslist.track.duration', trackFile)
     if( !tracksList ){
       return -1
     }

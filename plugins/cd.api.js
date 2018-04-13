@@ -7,7 +7,7 @@ module.exports = function(api){
   let cdWatcher
 
   api.register('api.ready', async () => {
-    cdWatcher = fork('./cd-watcher',[flagFileDirectory, flagFileName])
+    cdWatcher = fork(__dirname+'/cd-watcher',[flagFileDirectory, flagFileName])
     cdWatcher.on('message', (msg) => {
       if( cdAvailable != msg.cdAvailable ){
         cdAvailable =  msg.cdAvailable

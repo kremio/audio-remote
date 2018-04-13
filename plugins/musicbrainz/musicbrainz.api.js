@@ -6,13 +6,13 @@ module.exports = function(api){
 
   api.register('cd.toc.ready', async (...TOC) => {
     try{
-      const discid =  musicbrainz.computeDiscId( TOC )
+      const discid = musicbrainz.computeDiscId( TOC )
       const cdData = await musicbrainz.fetchCdData( discid )
       const tracksInfo = cdData.tracks
       delete cdData.tracks
       api.emit('cd.trackslist.update', [cdData, tracksInfo])
     }catch(err){
-      console.log("Musicbrains error:", err)
+      console.log("Musicbrainz error:", err)
       api.emit('cd.trackslist.notfound')
     }
   })
@@ -24,13 +24,13 @@ module.exports = function(api){
       delete cdData.tracks
       api.emit('cd.trackslist.update', [cdData, tracksInfo])
     }catch(err){
-      console.log("Musicbrains error:", err)
+      console.log("Musicbrainz error:", err)
       api.emit('cd.trackslist.notfound')
     }
   })
 
   api.register('search.cd', async (title, artist) => {
-    const tracksCount = await api.emit('cd.trackslist.count.get')[0]
+    const tracksCount = await api.emit('cd.trackslist.count.get')
     return musicbrainz.findRecordingByName( title, artist, tracksCount )
   })
 }

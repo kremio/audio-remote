@@ -43,7 +43,6 @@ module.exports = function(api){
     }
 
     playList( tracksList ){
-
       if(this.isPlaying){
         this.stop()
       }
@@ -91,7 +90,7 @@ module.exports = function(api){
   })
   */
  
-  api.register('player.play.list', async (files) => {
+  api.register('player.play.list', async (...files) => {
     player.playList( files )
   })
 

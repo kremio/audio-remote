@@ -49,7 +49,7 @@ describe('Playlist initialisation', () => {
 
     expect( mockDiscidCmd ).toHaveBeenCalledTimes(1)
 
-    expect( mockApiEmit ).toBeCalledWith( 'cd.toc.ready', ...TOC )
+    expect( mockApiEmit ).toBeCalledWith( 'cd.toc.ready', TOC )
   })
 })
 

@@ -45,7 +45,7 @@ function register(msg, handler){
  * asynchronously.
  * Returns an array of promises.
  */
-function emit(msg, params = []){
+function emit(msg, params = undefined){
 
   console.log("emit", msg, params)
 
@@ -54,8 +54,18 @@ function emit(msg, params = []){
     return []
   }
 
+  let iterable = true
+  // checks for null and undefined
+  if (!params || typeof params === 'string') {
+    iterable = false
+  }else{
+    iterable = typeof params[Symbol.iterator] === 'function'
+  }
+
+  const arg = iterable ? params : [params]
+
   return leaf.handlers
-    .map( (handler) => handler( ...params ) )
+    .map( (handler) => handler( ...arg  ) )
 }
 
 

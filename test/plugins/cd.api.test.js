@@ -1,6 +1,8 @@
 jest.mock('child_process')
 const mockChildProcess = require('child_process')
 
+const path = require('path')
+
 const mockApiRegister = jest.fn()
 const mockApiEmit = jest.fn()
 
@@ -12,7 +14,7 @@ const mockCdWatcher = {
 
 const mockEjectCmd = jest.fn()
 
-mockChildProcess.__setMockChildProc('fork', './cd-watcher', mockCdWatcher)
+mockChildProcess.__setMockChildProc('fork', path.resolve(__dirname,'../../plugins/cd-watcher'), mockCdWatcher)
 mockChildProcess.__setMockChildProc('exec', 'eject', mockEjectCmd )
 
 

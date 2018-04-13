@@ -24,7 +24,7 @@ test('On player.play.list([files]), update the playlist file and start playback'
   expect( mockApiRegister ).toBeCalledWith('player.play.list', expect.any(Function) )
 
   await mockApiRegister.mock.calls
-    .find( (args) => args[0] == 'player.play.list')[1](FILES_LIST)
+    .find( (args) => args[0] == 'player.play.list')[1](...FILES_LIST)
 
   expect( mockFs.writeFile ).toBeCalledWith( tmpPlayList, FILES_LIST.join('\n'), expect.any(Function) )
 
