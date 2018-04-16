@@ -39,8 +39,18 @@ module.exports = function(api){
       })
 
       //Set initial volume
-      this.volume( this._volume )
+      this.setVolume( this._volume )
     }
+
+    setVolume(v){
+      this.volume(v)
+      this._volume = v
+    }
+
+    getVolume(){
+      return this._volume
+    }
+
 
     playList( tracksList ){
       if(this.isPlaying){
@@ -126,11 +136,11 @@ module.exports = function(api){
   api.register('volume.set', async (volumePercent) => {
     //Cap it
     const volume = Math.min( 150, Math.max(0, Number(volumePercent)) )
-    player.volume( volume )
+    player.setVolume( volume )
     return {volume}
   })
 
   api.register('volume.get', async () => {
-    return {volume: player._volume}
+    return {volume: player.getVolume()}
   })
 }
