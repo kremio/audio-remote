@@ -9,7 +9,7 @@ module.exports = {
       name      : 'AudioRemote',
       script    : 'server.js',
       watch     : true,
-      ignore_watch: ["node_modules", "gui", "\.git", "webpack\.config\.json"] //do not watch front end code folder or git
+      ignore_watch: ["node_modules", "gui", "\.git", "webpack\.config\.json", "test","__mocks__"] //do not watch front end code folder or git
 /*      env: {
         COMMON_VARIABLE: 'true'
       },

@@ -1,3 +1,5 @@
+import './scss/main.scss'
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import App from './components/App.vue'

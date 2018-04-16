@@ -1,8 +1,7 @@
 <template>
-  <div>
-  	  <p>CD in drive: {{ cdAvailable }}</p>
-	  <button v-if="cdAvailable" v-on:click="eject">Eject</button>
-	  <tracks-list v-if="cdAvailable"/>
+  <div class="container">
+  	  <!-- <p>CD in drive: {{ cdAvailable }}</p> -->
+	  	  <tracks-list v-if="cdAvailable"/>
   </div>
 </template>
 
@@ -24,20 +23,13 @@ export default {
 	},
 	components:{
 		TracksList
-	},
-	mounted(){
-		this.$store.dispatch('cd/checkStatus')
-		//Poll CD state every second
-		setInterval(() => {
-			if( !document.hasFocus() ){
-				return
-			}
-			this.$store.dispatch('cd/checkStatus')
-		}, 1000)
 	}
 }
 </script>
 
 <style scoped>
 
+	.container {
+		position: relative;
+	}
 </style>
