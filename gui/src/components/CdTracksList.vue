@@ -2,6 +2,7 @@
   <div>
 	  <div v-if="available" class="container" v-bind:class="{ expanded: expanded }">
 		  <img v-if='coverArt' v-bind:src='coverArt'/>
+		  <img v-if='notFound' class='unknown-record' src='../images/unknown_record.png'/>
 		  <div class="album-info">
 			  <h1>{{ title }} <button class="toggle" v-on:click="toggle">...</button></h1>
 			  <album-search v-if='notFound'/>
@@ -66,7 +67,7 @@ export default {
 		height: auto;
 		vertical-align: top;
 	}
-
+	
 	.album-info {
 		position: absolute;
 		width: 100%;

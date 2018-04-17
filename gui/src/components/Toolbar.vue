@@ -2,13 +2,15 @@
 	<div class="toolbar">
 		<div class="main-container">
 			<p v-if="!cdAvailable">No CD !</p>
-			<button v-if="cdAvailable" v-on:click="eject">Eject</button>
+			<button v-if="cdAvailable" v-on:click="eject" class="button">Eject</button>
+			<volume-control v-if="cdAvailable" class="button"/>
 		</div>
 	</div>
 </template>
 
 <script>
 import Cd from "../api/cd.js"
+import VolumeControl from "./VolumeControl.vue"
 
 export default {
 	computed: {
@@ -31,8 +33,10 @@ export default {
 			}
 			this.$store.dispatch('cd/checkStatus')
 		}, 1000)
+	},
+	components: {
+		VolumeControl
 	}
-
 }
 </script>
 
@@ -61,12 +65,13 @@ export default {
 	 color: white;
  }
 
- button{
+ .button{
 	 background: transparent;
+	 display:inline-block;
 	 border-radius: 0;
 	 height: 100%;
 	 color: white;
-	 border-color: rgb(85,85,85);
+	 border: 1px solid rgb(85,85,85);
 	 border-top: none;
 	 border-bottom: none;
 	 padding: 0 10px;
@@ -74,10 +79,13 @@ export default {
 	 font-size: 0.8em;
 	 letter-spacing: 2px;
 	 transition: font-size 0.5s;
+	 font-weight: 400;
+   font-family: inherit;
  }
 
- button:hover{
+ .button:hover{
    background-color: rgba(255,255,255,0.22);
 		font-size: 1.5em;
+		cursor: pointer;
  }
 </style>

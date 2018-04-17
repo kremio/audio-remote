@@ -3,7 +3,6 @@
 		<toolbar/>
 	  <div class="main-container">
 		  <cd/>
-		  <volume-control/>
 		  <player/>
 	  </div>
   </div>
@@ -11,17 +10,15 @@
 
 <script>
   import Toolbar from "./Toolbar.vue"
-  import VolumeControl from "./VolumeControl.vue"
   import Cd from "./Cd.vue"
   import Player from "./Player.vue"
 
   export default {
-    components: {
-			Toolbar,
-	    Cd,
-	    VolumeControl,
-	    Player
-	}
+	  components: {
+		  Toolbar,
+		  Cd,
+		  Player
+	  }
   }
 </script>
 
