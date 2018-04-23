@@ -8,7 +8,7 @@
 			<i></i>
 		</span>
 		<div v-if="show" class="slider">
-			<vertical-slider v-model="volume" min="0" max="150"/>
+			<vertical-slider v-bind:leftToRight="false" v-model="volume" v-bind:min="0" v-bind:max="150"/>
 		</div>
 	</div>
 </template>
@@ -88,7 +88,7 @@ export default {
 	letter-spacing: 0;
 }
  .slider {
-	 height: 400px;
+	 height: 200px;
 	 width: 100%;
 	 position:absolute;
 	 top: 100%;

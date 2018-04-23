@@ -1,9 +1,11 @@
 <template>
 	<div>
 		<time-scroller v-if="trackDuration" v-bind:duration='trackDuration'/>
-		<button v-on:click="previous">|<</button>
-		<button v-on:click="playPause">{{ playing ? "||" : ">" }}</button>
-		<button v-on:click="next">>|</button>
+		<div class="button-group">
+			<button v-on:click="previous" class="previous">|<</button>
+			<button v-on:click="playPause">{{ playing ? "||" : ">" }}</button>
+			<button v-on:click="next" class="next">>|</button>
+		</div>
 	</div>
 </template>
 
@@ -51,5 +53,25 @@ export default {
 
 
 <style scoped>
+	.button-group{
+		text-align: center;
+		padding: 30px 0;
+		background: black;
+		color: white;
+	}
 
+	.button-group button {
+		border: none;
+		font-size: 30px;
+		font-weight: bold;
+		width: 70px;
+		margin: 0;
+		padding: 0;
+		color: inherit;
+		background: none;
+	}
+
+	.previous, .next {
+		letter-spacing: -6px;
+	}
 </style>

@@ -2,8 +2,8 @@
 	<div class="toolbar">
 		<div class="main-container">
 			<p v-if="!cdAvailable">No CD !</p>
-			<button v-if="cdAvailable" v-on:click="eject" class="button">Eject</button>
-			<volume-control v-if="cdAvailable" class="button"/>
+			<button v-if="cdAvailable" v-on:click="eject" class="eject button">Eject</button>
+			<volume-control v-if="cdAvailable" class="volume button"/>
 		</div>
 	</div>
 </template>
@@ -87,5 +87,18 @@ export default {
    background-color: rgba(255,255,255,0.22);
 		font-size: 1.5em;
 		cursor: pointer;
+ }
+
+ .button + .button{
+	 margin-left: 0;
+	 border-left: none;
+ }
+
+ .eject { 
+ float: right;
+ }
+
+ .volume {
+		float: left;
  }
 </style>
