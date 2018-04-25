@@ -9,18 +9,19 @@ export default {
 		guideMetric: "offsetWidth",
 		handleMetric: "offsetWidth",
 		handlePositionAttr: "left",
-		mouseEventPositionAttr: "clientX",
-		mouseEventOffsetAttr: "offsetX"
+		pointerPositionAttr: "pageX",
 	})
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  @import "scss/colours.scss";
+  
 	div {
 		position: relative;
 		width:100%;
 		height:4px;
-		background-color: rgba(0,183,234);
+		background-color: $blue;
 		margin: 0 auto;
 		border-radius: 2px;
 	}

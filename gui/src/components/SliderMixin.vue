@@ -9,8 +9,8 @@ export default {
 	},
 	data: ()=>({
 		pmouseCoord: undefined,
-		mouseupHandler: undefined,
-		mousemoveHandler: undefined
+		pointerUpHandler: undefined,
+		pointerMoveHandler: undefined
 	}),
 	methods:{
 		posToValue: function(){
@@ -24,47 +24,51 @@ export default {
 			const max = this.$refs.guide[this.guideMetric] - this.$refs.handle[this.handleMetric]
 			return`${ ( this.leftToRight ? alpha : (1.0 - alpha) ) * max}px`
 		},
-		moveHandle: function(e){
-			if( this.mouseupHandler ){
-				return
-			}
-			const newPos = e[this.mouseEventOffsetAttr] - this.$refs.handle[this.handleMetric] * 0.5
-			this.$refs.handle.style[this.handlePositionAttr] = `${newPos}px`
-			this.$emit('input', this.posToValue() )
-		},
 		grabHandle: function(e){
-			this.pmouseCoord = e[this.mouseEventPositionAttr]
-			this.mouseupHandler = this.releaseHandle.bind(this)
-			document.addEventListener('mouseup', this.mouseupHandler )
-			this.mousemoveHandler = this.onDrag.bind(this)
-			document.addEventListener('mousemove', this.mousemoveHandler )
+			console.log( "grabHandle" )
+			this.pmouseCoord = e[this.pointerPositionAttr]
+			this.pointerUpHandler = this.releaseHandle().bind(this)
+			document.addEventListener('mouseup', this.pointerUpHandler )
+			this.pointerMoveHandler = this.onDrag.bind(this)
+			document.addEventListener('mousemove', this.pointerMoveHandler )
+			
 		},
-		releaseHandle: function(){
-			document.removeEventListener('mouseup', this.mouseupHandler )
-			document.removeEventListener('mousemove', this.mousemoveHandler )
-			this.mouseupHandler = undefined
-			this.mousemoveHandler = undefined
-			this.$emit('change', this.posToValue() )
+		touchGrabHandle: function(e){
+			this.pmouseCoord = e[this.pointerPositionAttr]
+			this.pointerUpHandler = this.releaseHandle('touchend','touchmove').bind(this)
+			document.addEventListener('touchend', this.pointerUpHandler )
+			this.pointerMoveHandler = this.onDrag.bind(this)
+			document.addEventListener('touchmove', this.pointerMoveHandler )
+			e.preventDefault()
+		},
+		releaseHandle: function( pointerUp = 'mouseup', pointerMove = 'mousemove'){
+			return () => {
+				document.removeEventListener( pointerUp, this.pointerUpHandler )
+				document.removeEventListener( pointerMove, this.pointerMoveHandler )
+				this.pointerUpHandler = undefined
+				this.pointerMoveHandler = undefined
+				this.$emit('change', this.posToValue() )
+			}
 		},
 		onDrag: function(e){
-			const delta = e[this.mouseEventPositionAttr] - this.pmouseCoord
+			const delta = e[this.pointerPositionAttr] - this.pmouseCoord
 			const pos = Number(this.$refs.handle.style[this.handlePositionAttr].replace(/(px|%)$/,''))
 			const max = this.$refs.guide[this.guideMetric] - this.$refs.handle[this.handleMetric]
 			const newPos = Math.max( 0, Math.min( max, pos+delta) )
 			this.$refs.handle.style[this.handlePositionAttr] = `${newPos}px`
-			this.pmouseCoord = e[this.mouseEventPositionAttr]
+			this.pmouseCoord = e[this.pointerPositionAttr]
 			this.$emit('input', this.posToValue() )
 		}
 	},
 	watch: {
-		value: function(newVal, oldVal){
-			if(this.mousemoveHandler){ //don't update if currently holding the handle
+		value: function(newVal, oldVal){ //update the position of the handle on value change
+			if(this.pointerMoveHandler){ //don't update if currently holding the handle
 				return
 			}
 			this.$refs.handle.style[this.handlePositionAttr] = this.valueToPos( newVal )
 		}
 	},
-	mounted(){
+	mounted(){ //set initial position
 			this.$refs.handle.style[this.handlePositionAttr] = this.valueToPos( this.value )
 	}
 }
