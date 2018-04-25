@@ -23,13 +23,12 @@
 </script>
 
 <style scoped>
- .app {
-	 width: 100%;
-	 height: 100%;
-
-	 padding-top: 3em;
- }
- .main-container {
-   background-color: white;
- }
+.app {
+  box-sizing: border-box;
+	width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  height: 100%;
+	padding-top: 3em;
+}
 </style>

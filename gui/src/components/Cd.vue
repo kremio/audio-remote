@@ -31,5 +31,6 @@ export default {
 
 	.container {
 		position: relative;
+		background-color: white;
 	}
 </style>

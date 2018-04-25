@@ -8,6 +8,10 @@ import Store from './store'
 
 const store = new Vuex.Store(Store)
 
+if(navigator.standalone == true) {
+  // App is installed and therefore fullscreen
+  document.body.classList.add("fullscreen")
+}
 
 new Vue({
   el: '#app',
