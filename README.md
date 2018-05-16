@@ -1,6 +1,6 @@
 The aim of this project is to allow controlling the playback of audio CDs over an HTML/web interface, and later other audio files using playlists, on a Linux system.
 
-The system is centered around a Node.js HTTP server that interacts with various programmes to play the audio, control the volume and fetch album information from the Musicbrainz database.
+The system is centered around a Node.js HTTP server that interacts with various programs to play the audio, control the volume and fetch album information from the Musicbrainz database.
 
 ## Dependencies
 TODO
